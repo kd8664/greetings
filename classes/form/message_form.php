@@ -21,27 +21,26 @@
  * @copyright   2023 KD <dzhetpisov@edu.surgu.ru>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once('../../config.php');
-require_once($CFG->dirroot . '/local/greetings/lib.php');
 
-$context = context_system::instance();
-$PAGE->set_context($context);
-$PAGE->set_url(new moodle_url('/local/greetings/index.php'));
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($SITE->fullname);
-$PAGE->set_heading(get_string('pluginname', 'local_greetings'));
+namespace local_greetings\form;
 
-echo $OUTPUT->header();
-$messageform = new \local_greetings\form\message_form();
-if (isloggedin()) {
-    echo local_greetings_get_greeting($USER);
-} else {
-    echo get_string('greetinguser', 'local_greetings');
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/formslib.php');
+
+class message_form extends \moodleform
+{
+    /**
+     * Define the form.
+     */
+    public function definition()
+    {
+        $mform = $this->_form; // Don't forget the underscore!
+
+        $mform->addElement('textarea', 'message', get_string('yourmessage', 'local_greetings')); // Add elements to your form.
+        $mform->setType('message', PARAM_TEXT); // Set type of element.
+
+        $submitlabel = get_string('submit');
+        $mform->addElement('submit', 'submitmessage', $submitlabel);
+    }
 }
-$messageform->display();
-if ($data = $messageform->get_data()) {
-    $message = required_param('message', PARAM_TEXT);
-
-    echo $OUTPUT->heading($message, 4);
-}
-echo $OUTPUT->footer();
